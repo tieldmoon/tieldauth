@@ -1,6 +1,6 @@
-package models
+package Models
 
-type Token struct {
+type AppToken struct {
 	Appid     string `json:"app_id"`
 	SecretKey string `json:"secret_key"`
 }

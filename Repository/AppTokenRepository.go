@@ -10,5 +10,6 @@ type TokenRepositoryMongo struct {
 }
 
 func (t *TokenRepositoryMongo) CheckAppIdIsAvailable(app_id string) bool {
+
 	return false
 }
