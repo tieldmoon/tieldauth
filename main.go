@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"os"
 	"sync"
@@ -18,11 +19,13 @@ func main() {
 
 	Workers := Service.Worker{
 		Wg:    new(sync.WaitGroup),
-		Jobs:  make(chan map[int]interface{}, 100),
-		Mongo: make(chan *mongo.Client, 100),
+		Jobs:  make(chan map[int]interface{}, 10),
+		Mongo: make(chan *mongo.Client, 10),
 	}
-	go Workers.InitWorker(100)
+	go Workers.InitWorker(30)
 	Workers.Wg.Wait()
+	m := <-Workers.Mongo
+	defer m.Disconnect(context.TODO())
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
