@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"sync"
@@ -14,9 +13,7 @@ import (
 )
 
 func main() {
-	if e := godotenv.Load(); e != nil {
-		fmt.Println(e)
-	}
+	godotenv.Load()
 	worker := Worker{
 		Wg:    new(sync.WaitGroup),
 		Jobs:  make(chan map[int]interface{}, 100),
