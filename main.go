@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"sync"
@@ -13,11 +14,8 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
-	port := "3000"
-	if err == nil {
-		port = os.Getenv("PORT")
-	}
+	godotenv.Load()
+
 	worker := Worker{
 		Wg:    new(sync.WaitGroup),
 		Jobs:  make(chan map[int]interface{}, 100),
@@ -33,5 +31,10 @@ func main() {
 	r.Group(func(r chi.Router) {
 		r.Post("/api/oauth2/signin", Delivery.SigninHandler)
 	})
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+	fmt.Println(port)
 	http.ListenAndServe(":"+port, r)
 }
