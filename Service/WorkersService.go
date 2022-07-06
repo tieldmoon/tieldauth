@@ -35,12 +35,12 @@ func (w *Worker) InitWorker(worker_number int) {
 func initMongoDb(c *mongo.Client) {
 	// run if not exits, is exits skip
 	if err := c.Database("Token").CreateCollection(context.TODO(), "app_token"); err == nil {
-		// generate sample data
+		// generate sample data for local development
 		c.Database("Token").Collection("app_token").InsertOne(
 			context.TODO(), bson.D{
 				bson.E{Key: "app_id", Value: "17238916"},
 				bson.E{Key: "app_key", Value: "dhw92ujie982ujdiq982uehd1d2"},
-				bson.E{Key: "publisher", Value: "tieldmoon"},
+				bson.E{Key: "publisher", Value: "test@mail.com"},
 			},
 		)
 	}
