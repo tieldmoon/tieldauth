@@ -8,7 +8,7 @@ import (
 
 type Worker struct {
 	Wg    *sync.WaitGroup
-	Jobs  chan map[int]interface{}
+	Jobs  chan map[int]any
 	Mongo chan *mongo.Client
 }
 
