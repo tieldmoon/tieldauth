@@ -13,7 +13,11 @@ import (
 )
 
 func main() {
-	godotenv.Load()
+	err := godotenv.Load()
+	port := "3000"
+	if err == nil {
+		port = os.Getenv("PORT")
+	}
 	worker := Worker{
 		Wg:    new(sync.WaitGroup),
 		Jobs:  make(chan map[int]interface{}, 100),
@@ -29,6 +33,5 @@ func main() {
 	r.Group(func(r chi.Router) {
 		r.Post("/api/oauth2/signin", Delivery.SigninHandler)
 	})
-
-	http.ListenAndServe(":"+os.Getenv("PORT"), r)
+	http.ListenAndServe(":"+port, r)
 }
