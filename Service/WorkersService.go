@@ -22,7 +22,7 @@ func (w *Worker) InitWorker(worker_number int) {
 	go func(mo chan *mongo.Client) {
 		m, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(os.Getenv("MONGO_SERVER")))
 		if err != nil {
-			panic(err)
+			fmt.Println(err)
 		}
 		initMongoDb(m)
 		log.Println("Success connect mongodb")
