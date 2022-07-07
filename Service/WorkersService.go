@@ -7,6 +7,7 @@ import (
 	"os"
 	"sync"
 
+	"github.com/tieldmoon/tieldauth/Repository"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -32,8 +33,15 @@ func (w *Worker) InitWorker(worker_number int) {
 	defer mongodb.Disconnect(context.TODO())
 	for i := 0; i < worker_number; i++ {
 		go func(i int, w *Worker) {
-			for _, v := range <-w.Jobs {
-				fmt.Println(v, i)
+			for k, v := range <-w.Jobs {
+				switch k {
+				case 1:
+					_ = Repository.TokenRepositoryMongo{
+						Client: mongodb,
+					}
+					fmt.Println(v)
+
+				}
 				w.Wg.Done()
 			}
 		}(i, w)

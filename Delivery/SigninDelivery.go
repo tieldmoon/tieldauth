@@ -1,7 +1,6 @@
 package Delivery
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/tieldmoon/tieldauth/Service"
@@ -12,10 +11,7 @@ func SigninHandler(w http.ResponseWriter, r *http.Request, wo *Service.Worker) {
 		panic(err)
 	}
 	wo.Wg.Add(1)
-	wo.Jobs <- map[int]any{1: "hello world"}
-
-	appid := r.Form.Get("app_id")
-	fmt.Println(appid)
+	wo.Jobs <- map[int]any{1: [2]string{r.PostFormValue("app_id"), r.PostFormValue("secret_key")}}
 
 	// m := <-wo.Mongo
 	// m.Ping(context.TODO(), readpref.Primary())
