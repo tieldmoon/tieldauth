@@ -1,6 +1,10 @@
 package Repository
 
 import (
+	"context"
+	"log"
+
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -14,5 +18,12 @@ type TokenRepositoryMongo struct {
 }
 
 func (t *TokenRepositoryMongo) CheckAppIdIsAvailable(app_id string) bool {
+	col := t.Client.Database("Token").Collection("app_token")
+	_, err := col.Find(context.TODO(), bson.D{
+		bson.E{Key: "app_id", Value: app_id},
+	})
+	if err != nil {
+		log.Println(err)
+	}
 	return false
 }
