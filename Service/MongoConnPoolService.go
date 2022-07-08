@@ -5,20 +5,13 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"sync"
 
-	"github.com/tieldmoon/tieldauth/Repository"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type Worker struct {
-	Wg   *sync.WaitGroup
-	Jobs chan map[int]any
-}
-
-func (w *Worker) InitWorker(worker_number int) {
+func MongoConnPool() *mongo.Client {
 	mo := make(chan *mongo.Client)
 	go func(mo chan *mongo.Client) {
 		m, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(os.Getenv("MONGO_SERVER")))
@@ -30,22 +23,8 @@ func (w *Worker) InitWorker(worker_number int) {
 		mo <- m
 	}(mo)
 	mongodb := <-mo
-	defer mongodb.Disconnect(context.TODO())
-	for i := 0; i < worker_number; i++ {
-		go func(i int, w *Worker) {
-			for k, v := range <-w.Jobs {
-				switch k {
-				case 1:
-					_ = Repository.TokenRepositoryMongo{
-						Client: mongodb,
-					}
-					fmt.Println(v)
-
-				}
-				w.Wg.Done()
-			}
-		}(i, w)
-	}
+	close(mo)
+	return mongodb
 }
 
 func initMongoDb(c *mongo.Client) {
