@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/tieldmoon/tieldauth/Models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -23,8 +24,17 @@ func (t *TokenRepositoryMongo) CheckAppIdIsAvailable(app_id string) bool {
 		bson.E{Key: "app_id", Value: app_id},
 	})
 	var result bson.D
+	var data Models.AppToken
 	sr.Decode(&result)
-	fmt.Println(result)
+	doc, err := bson.Marshal(result)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = bson.Unmarshal(doc, data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(data)
 
 	return false
 }
