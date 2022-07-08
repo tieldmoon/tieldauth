@@ -30,6 +30,7 @@ func (t *TokenRepositoryMongo) CheckAppIdIsAvailable(app_id string) bool {
 	if err != nil {
 		fmt.Println(err)
 	}
+	fmt.Println(result)
 	err = bson.Unmarshal(doc, data)
 	if err != nil {
 		fmt.Println(err)
