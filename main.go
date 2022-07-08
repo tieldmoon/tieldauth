@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
+	"github.com/tieldmoon/tieldauth/Delivery"
 	"github.com/tieldmoon/tieldauth/Service"
 )
 
@@ -17,13 +18,13 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
-	db := Service.MongoConnPool()
-	defer db.Disconnect(context.TODO())
+	mongodb := Service.MongoConnPool()
+	defer mongodb.Disconnect(context.TODO())
 
 	// Oauth2
 	r.Group(func(r chi.Router) {
 		r.Post("/api/oauth2/signin", func(w http.ResponseWriter, r *http.Request) {
-
+			Delivery.SigninHandler(w, r, mongodb)
 		})
 	})
 	port := os.Getenv("PORT")
