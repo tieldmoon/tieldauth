@@ -15,8 +15,8 @@ func SigninHandler(w http.ResponseWriter, r *http.Request, mongodb *mongo.Client
 	t := Repository.TokenRepositoryMongo{
 		Client: mongodb,
 	}
-	available := t.CheckAppIdIsAvailable(r.PostFormValue("app_id"))
-	fmt.Println(available)
+	data, available := t.CheckAppIdIsAvailable(r.PostFormValue("app_id"))
+	fmt.Println(data, available)
 
 	// m := <-wo.Mongo
 	// m.Ping(context.TODO(), readpref.Primary())

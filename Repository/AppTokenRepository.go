@@ -18,7 +18,7 @@ type TokenRepositoryMongo struct {
 	Client *mongo.Client
 }
 
-func (t *TokenRepositoryMongo) CheckAppIdIsAvailable(app_id string) bool {
+func (t *TokenRepositoryMongo) CheckAppIdIsAvailable(app_id string) (Models.AppToken, bool) {
 	col := t.Client.Database("Token").Collection("app_token")
 	var result bson.D
 	col.FindOne(context.TODO(), bson.D{
@@ -29,12 +29,10 @@ func (t *TokenRepositoryMongo) CheckAppIdIsAvailable(app_id string) bool {
 	if err != nil {
 		fmt.Println("er 1:", err)
 	}
-	fmt.Println("result : ", result)
 	err = bson.Unmarshal(doc, &data)
 	if err != nil {
 		fmt.Println("err 2:", err)
 	}
-	fmt.Println(data)
 
-	return false
+	return data, false
 }
