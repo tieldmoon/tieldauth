@@ -32,7 +32,7 @@ func SigninHandler(w http.ResponseWriter, r *http.Request, mongodb *mongo.Client
 	if err != nil {
 		e, _ := json.Marshal(map[string]any{
 			"errorCode": http.StatusBadRequest,
-			"message":   "Invalid secret key",
+			"message":   err.Error(),
 		})
 		http.Error(w, string(e), http.StatusBadRequest)
 		return
