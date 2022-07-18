@@ -28,11 +28,21 @@ func SigninHandler(w http.ResponseWriter, r *http.Request, mongodb *mongo.Client
 	}
 	// fmt.Println(data, available)
 	// if available parsing jwt token
-	err := Usecase.ParseJWT(r.PostFormValue("secret_key"), data.AppKey)
+	j, err := Usecase.ParseJWT(r.PostFormValue("secret_key"), data.AppKey)
 	if err != nil {
 		e, _ := json.Marshal(map[string]any{
 			"errorCode": http.StatusBadRequest,
 			"message":   "Invalid secret key",
+		})
+		http.Error(w, string(e), http.StatusBadRequest)
+		return
+	}
+	email := j["email"]
+	password := j["password"]
+	if email == nil || password == nil {
+		e, _ := json.Marshal(map[string]any{
+			"errorCode": http.StatusBadRequest,
+			"message":   "Invalid jwt payload format",
 		})
 		http.Error(w, string(e), http.StatusBadRequest)
 		return

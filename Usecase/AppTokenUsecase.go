@@ -2,19 +2,20 @@ package Usecase
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/golang-jwt/jwt"
 )
 
-func ParseJWT(secret string, appkey string) error {
+func ParseJWT(secret string, appkey string) (jwt.MapClaims, error) {
 	t, err := verifyJWT(secret, appkey)
 	if err != nil {
-		log.Println(err)
-		return err
+		return nil, err
 	}
-	log.Println(t)
-	return nil
+	if claims, ok := t.Claims.(jwt.MapClaims); ok && t.Valid {
+		return claims, nil
+	}
+
+	return nil, fmt.Errorf("invalid Jwt token")
 }
 
 func verifyJWT(secret string, appkey string) (*jwt.Token, error) {
