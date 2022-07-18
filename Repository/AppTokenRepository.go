@@ -2,7 +2,6 @@ package Repository
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/tieldmoon/tieldauth/Models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -27,12 +26,12 @@ func (t *TokenRepositoryMongo) CheckAppIdIsAvailable(app_id string) (Models.AppT
 	var data Models.AppToken
 	doc, err := bson.Marshal(result)
 	if err != nil {
-		fmt.Println("er 1:", err)
+		return Models.AppToken{}, false
 	}
 	err = bson.Unmarshal(doc, &data)
 	if err != nil {
-		fmt.Println("err 2:", err)
+		return Models.AppToken{}, false
 	}
 
-	return data, false
+	return data, true
 }

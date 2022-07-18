@@ -1,10 +1,11 @@
 package Delivery
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
 
 	"github.com/tieldmoon/tieldauth/Repository"
+	"github.com/tieldmoon/tieldauth/Usecase"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -16,9 +17,26 @@ func SigninHandler(w http.ResponseWriter, r *http.Request, mongodb *mongo.Client
 		Client: mongodb,
 	}
 	data, available := t.CheckAppIdIsAvailable(r.PostFormValue("app_id"))
-	fmt.Println(data, available)
+	// if not acailable set error
+	if !available {
+		e, _ := json.Marshal(map[string]any{
+			"errorCode": http.StatusNotFound,
+			"message":   "Not Found",
+		})
+		http.Error(w, string(e), http.StatusNotFound)
+		return
+	}
+	// fmt.Println(data, available)
+	// if available parsing jwt token
+	err := Usecase.ParseJWT(r.PostFormValue("secret_key"), data.AppKey)
+	if err != nil {
+		e, _ := json.Marshal(map[string]any{
+			"errorCode": http.StatusBadRequest,
+			"message":   "Invalid secret key",
+		})
+		http.Error(w, string(e), http.StatusBadRequest)
+		return
+	}
 
-	// m := <-wo.Mongo
-	// m.Ping(context.TODO(), readpref.Primary())
 	w.Write([]byte("Ok"))
 }
