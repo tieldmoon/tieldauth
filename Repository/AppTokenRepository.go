@@ -9,7 +9,7 @@ import (
 )
 
 type TokenRepository interface {
-	CheckAppIdIsAvailable(app_id string) bool
+	FindAppId(app_id string) bool
 	GetAppKey(app_id string) string
 }
 
@@ -17,7 +17,7 @@ type TokenRepositoryMongo struct {
 	Client *mongo.Client
 }
 
-func (t *TokenRepositoryMongo) CheckAppIdIsAvailable(app_id string) (Models.AppToken, bool) {
+func (t *TokenRepositoryMongo) FindAppId(app_id string) (Models.AppToken, bool) {
 	col := t.Client.Database("Token").Collection("app_token")
 	var result bson.D
 	col.FindOne(context.TODO(), bson.D{
