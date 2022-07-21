@@ -2,15 +2,17 @@ package Delivery
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
+	"reflect"
 
 	"github.com/tieldmoon/tieldauth/Repository"
 	"github.com/tieldmoon/tieldauth/Usecase"
 	"go.mongodb.org/mongo-driver/mongo"
-	"golang.org/x/crypto/bcrypt"
 )
 
+// Signin Handler
+//
+// /api/oauth2/signin
 func SigninHandler(w http.ResponseWriter, r *http.Request, mongodb *mongo.Client) {
 	if err := r.ParseForm(); err != nil {
 		panic(err)
@@ -48,20 +50,46 @@ func SigninHandler(w http.ResponseWriter, r *http.Request, mongodb *mongo.Client
 		http.Error(w, string(e), http.StatusBadRequest)
 		return
 	}
-	a, _ := bcrypt.GenerateFromPassword([]byte(j["password"].(string)), 13)
-	log.Println(string(a))
+
 	password := j["password"].(string)
 	u := Repository.UserRepositoryMongo{
 		Client: mongodb,
 	}
 	// verify email password
-	if success := Usecase.Login(&u, email.(string), string(password)); success {
+	user := Usecase.Login(&u, email.(string), string(password))
+
+	// user token
+	usertoken, err := Usecase.GenerateUserToken(data.AppKey, user)
+	if err != nil {
+		e, _ := json.Marshal(map[string]any{
+			"statusCode":    http.StatusConflict,
+			"message":       "error generate usertoken",
+			"user_token":    "",
+			"refresh_token": "",
+		})
+		w.Write([]byte(e))
+		return
+	}
+
+	// refresh token
+	refreshtoken, err := Usecase.GenerateRefreshToken(data.AppKey, user)
+	if err != nil {
+		e, _ := json.Marshal(map[string]any{
+			"statusCode":    http.StatusConflict,
+			"message":       "error generate refreshtoken",
+			"user_token":    "",
+			"refresh_token": "",
+		})
+		w.Write([]byte(e))
+		return
+	}
+	if !reflect.ValueOf(user).IsZero() {
 		// generate user token and refresh token
 		e, _ := json.Marshal(map[string]any{
 			"statusCode":    http.StatusOK,
 			"message":       "login success",
-			"user_token":    "",
-			"refresh_token": "",
+			"user_token":    usertoken,
+			"refresh_token": refreshtoken,
 		})
 		w.Write([]byte(e))
 		return

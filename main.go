@@ -23,6 +23,7 @@ func main() {
 
 	// Oauth2
 	r.Group(func(r chi.Router) {
+		// signin
 		r.Post("/api/oauth2/signin", func(w http.ResponseWriter, r *http.Request) {
 			Delivery.SigninHandler(w, r, mongodb)
 		})
