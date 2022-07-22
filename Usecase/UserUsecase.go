@@ -2,7 +2,6 @@ package Usecase
 
 import (
 	"log"
-
 	"github.com/tieldmoon/tieldauth/Models"
 	"github.com/tieldmoon/tieldauth/Repository"
 	"golang.org/x/crypto/bcrypt"

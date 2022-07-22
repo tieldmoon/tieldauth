@@ -29,6 +29,10 @@ func SigninHandler(w http.ResponseWriter, r *http.Request, mongodb *mongo.Client
 			"message": "Not Found",
 		})
 		w.Write([]byte(e))
+			"statusCode": http.StatusNotFound,
+			"message":    "Not Found",
+		})
+		http.Error(w, string(e), http.StatusNotFound)
 		return
 	}
 	// fmt.Println(data, available)
