@@ -10,9 +10,9 @@ import (
 func GenerateUserToken(secretkey string, user Models.User) (string, error) {
 	claims := Models.UserTokenClaims{
 		StandardClaims: jwt.StandardClaims{
-			Issuer:    user.Username,
+			Issuer:    user.Email,
 			IssuedAt:  time.Now().Unix(),
-			ExpiresAt: time.Now().Add(time.Duration(2) * time.Hour).Unix(),
+			ExpiresAt: time.Now().Add(time.Duration(10) * time.Hour).Unix(),
 		},
 		Username: user.Username,
 	}
@@ -26,7 +26,7 @@ func GenerateUserToken(secretkey string, user Models.User) (string, error) {
 
 func GenerateRefreshToken(secretkey string, user Models.User) (string, error) {
 	claims := jwt.StandardClaims{
-		Issuer:    user.Username,
+		Issuer:    user.Email,
 		ExpiresAt: time.Now().Add(time.Duration(336) * time.Hour).Unix(),
 	}
 	t := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)

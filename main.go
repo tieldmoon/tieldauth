@@ -22,9 +22,8 @@ func main() {
 	defer mongodb.Disconnect(context.TODO())
 
 	// Oauth2
-	r.Group(func(r chi.Router) {
-		// signin
-		r.Post("/api/oauth2/signin", func(w http.ResponseWriter, r *http.Request) {
+	r.Group(func(o chi.Router) {
+		o.Post("/api/oauth2/signin", func(w http.ResponseWriter, r *http.Request) {
 			Delivery.SigninHandler(w, r, mongodb)
 		})
 	})

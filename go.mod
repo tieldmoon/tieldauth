@@ -9,6 +9,7 @@ require (
 )
 
 require (
+	github.com/go-chi/cors v1.2.1 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/snappy v0.0.1 // indirect

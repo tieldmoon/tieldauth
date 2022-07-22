@@ -19,7 +19,9 @@ type UserRepositoryMongo struct {
 func (u *UserRepositoryMongo) FindByEmail(email string) (Models.User, bool) {
 	col := u.Client.Database("User").Collection("user_data")
 	var result bson.D
-	col.FindOne(context.TODO(), bson.D{}).Decode(&result)
+	col.FindOne(context.TODO(), bson.D{
+		bson.E{Key: "email", Value: email},
+	}).Decode(&result)
 	doc, err := bson.Marshal(result)
 	if err != nil {
 		return Models.User{}, false

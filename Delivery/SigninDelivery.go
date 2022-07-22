@@ -14,6 +14,8 @@ import (
 //
 // /api/oauth2/signin
 func SigninHandler(w http.ResponseWriter, r *http.Request, mongodb *mongo.Client) {
+	w.Header().Add("Access-Control-Allow-Origin", "*") // make acccessible for all url
+
 	if err := r.ParseForm(); err != nil {
 		panic(err)
 	}
@@ -24,10 +26,9 @@ func SigninHandler(w http.ResponseWriter, r *http.Request, mongodb *mongo.Client
 	// if not acailable set error
 	if !available {
 		e, _ := json.Marshal(map[string]any{
-			"statusCode": http.StatusNotFound,
-			"message":    "Not Found",
+			"message": "Not Found",
 		})
-		http.Error(w, string(e), http.StatusNotFound)
+		w.Write([]byte(e))
 		return
 	}
 	// fmt.Println(data, available)
@@ -35,10 +36,9 @@ func SigninHandler(w http.ResponseWriter, r *http.Request, mongodb *mongo.Client
 	j, err := Usecase.ParseJWT(r.PostFormValue("secret_key"), data.AppKey)
 	if err != nil {
 		e, _ := json.Marshal(map[string]any{
-			"statusCode": http.StatusBadRequest,
-			"message":    err.Error(),
+			"message": err.Error(),
 		})
-		http.Error(w, string(e), http.StatusBadRequest)
+		w.Write([]byte(e))
 		return
 	}
 	email := j["email"]
@@ -47,7 +47,7 @@ func SigninHandler(w http.ResponseWriter, r *http.Request, mongodb *mongo.Client
 			"statusCode": http.StatusBadRequest,
 			"message":    "Invalid jwt payload format",
 		})
-		http.Error(w, string(e), http.StatusBadRequest)
+		w.Write([]byte(e))
 		return
 	}
 
@@ -73,9 +73,9 @@ func SigninHandler(w http.ResponseWriter, r *http.Request, mongodb *mongo.Client
 
 	// refresh token
 	refreshtoken, err := Usecase.GenerateRefreshToken(data.AppKey, user)
+	// fmt.Println(email, password)
 	if err != nil {
 		e, _ := json.Marshal(map[string]any{
-			"statusCode":    http.StatusConflict,
 			"message":       "error generate refreshtoken",
 			"user_token":    "",
 			"refresh_token": "",
@@ -86,7 +86,6 @@ func SigninHandler(w http.ResponseWriter, r *http.Request, mongodb *mongo.Client
 	if !reflect.ValueOf(user).IsZero() {
 		// generate user token and refresh token
 		e, _ := json.Marshal(map[string]any{
-			"statusCode":    http.StatusOK,
 			"message":       "login success",
 			"user_token":    usertoken,
 			"refresh_token": refreshtoken,
@@ -97,7 +96,6 @@ func SigninHandler(w http.ResponseWriter, r *http.Request, mongodb *mongo.Client
 
 	// result
 	e, _ := json.Marshal(map[string]any{
-		"statusCode":    http.StatusFound,
 		"message":       "invalid email or password",
 		"user_token":    "",
 		"refresh_token": "",
